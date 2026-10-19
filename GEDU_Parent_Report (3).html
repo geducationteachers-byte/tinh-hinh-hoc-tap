@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>G.EDU · Theo dõi tình hình học tập</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=DM+Mono:wght@500&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+<style>
+/* ================= DESIGN TOKENS ================= */
+:root{
+  --navy:#1e3a8a; --navy-2:#162c69; --gold:#c9a84c; --gold-2:#ffb100;
+  --cream:#faf7f0; --card:#ffffff; --ink:#1f2937; --mute:#6b7280; --line:#e9e2d2;
+  --up:#15803d; --up-bg:#e8f5ec; --down:#b91c1c; --down-bg:#fbeaea; --flat:#8a8f98; --flat-bg:#f1f1ef;
+  --c-grammar:#1e3a8a; --c-reading:#0f766e; --c-listening:#d97706; --c-vocab:#7c3aed; --c-dg:#be185d; --c-overall:#374151;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--cream);color:var(--ink);font-family:'Be Vietnam Pro',system-ui,sans-serif;font-size:15px;line-height:1.5}
+button{font-family:inherit;cursor:pointer}
+.num{font-family:'DM Mono',ui-monospace,monospace}
+
+/* header */
+.top{background:var(--navy);color:#fff;border-bottom:3px solid var(--gold)}
+.top-in{max-width:760px;margin:0 auto;padding:14px 16px;display:flex;align-items:center;gap:10px}
+.logo{font-family:'Playfair Display',serif;font-size:22px;letter-spacing:.5px}
+.logo b{color:var(--gold-2)}
+.top-t{font-size:13px;opacity:.85;border-left:1px solid rgba(255,255,255,.35);padding-left:10px}
+main{max-width:760px;margin:0 auto;padding:18px 16px 48px}
+.demo{background:#fff6dc;border:1px dashed var(--gold);color:#7a5b00;border-radius:10px;padding:8px 12px;font-size:13px;margin-bottom:14px}
+
+/* card */
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;box-shadow:0 1px 2px rgba(30,58,138,.04)}
+h1,h2{margin:0}
+h2.sec{font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--mute);font-weight:600;margin:26px 2px 10px}
+
+/* login */
+.login{max-width:420px;margin:24px auto 0}
+.login h1{font-family:'Playfair Display',serif;font-size:26px;color:var(--navy)}
+.login p.lead{color:var(--mute);margin:6px 0 18px;font-size:14px}
+.f{display:block;margin-bottom:14px}
+.f span{display:block;font-size:13px;font-weight:600;margin-bottom:6px}
+.combo{position:relative}
+.nlist{position:absolute;z-index:20;left:0;right:0;top:calc(100% + 4px);margin:0;padding:4px;list-style:none;background:#fff;border:1px solid #d6cfbd;border-radius:10px;box-shadow:0 8px 24px rgba(30,58,138,.12);max-height:260px;overflow-y:auto}
+.nlist li{padding:10px 12px;border-radius:8px;cursor:pointer;font-size:15px}
+.nlist li.on{background:#eef2fb;color:var(--navy)}
+.nlist li[data-n]:hover{background:#f5f7fc}
+.nlist li.none{color:var(--mute);cursor:default}
+.f span .ph{color:var(--navy)}
+.dsw{margin-top:8px;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.dsw button{border:1px solid var(--gold);background:#fff;color:#7a5b00;border-radius:99px;padding:4px 12px;font-size:13px}
+.dsw button.on{background:var(--navy);border-color:var(--navy);color:#fff}
+.lockbox{text-align:center}.lockbox .lk-ic{font-size:40px;line-height:1;margin-bottom:8px}
+.lockbox p.lead{white-space:pre-line;margin-bottom:0}
+.lopfix{background:#eef2fb;color:var(--navy);border-radius:10px;padding:10px 12px;margin-bottom:14px;font-size:15px}
+.f input,.f select{width:100%;padding:11px 12px;border:1px solid #d6cfbd;border-radius:10px;font:inherit;background:#fff}
+.f input:focus,.f select:focus{outline:2px solid var(--gold-2);border-color:transparent}
+.btn{width:100%;padding:12px;border:0;border-radius:10px;background:var(--navy);color:#fff;font-weight:600;font-size:15px}
+.btn:disabled{opacity:.6}
+.err{color:var(--down);font-size:13px;min-height:20px;margin-top:10px}
+
+/* report head */
+.hello{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.eyebrow{font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:var(--gold);font-weight:700}
+.hello h1{font-family:'Playfair Display',serif;font-size:28px;color:var(--navy);line-height:1.2}
+.sub{color:var(--mute);font-size:14px}
+.ghost{background:none;border:1px solid #d6cfbd;border-radius:999px;padding:7px 14px;font-size:13px;color:var(--navy);white-space:nowrap}
+.tabs{display:flex;gap:8px;overflow-x:auto;margin:16px 0 14px;padding-bottom:4px}
+.mtab{flex:0 0 auto;border:1px solid #d6cfbd;background:#fff;border-radius:999px;padding:7px 14px;font-size:13px;color:var(--ink)}
+.mtab.on{background:var(--navy);border-color:var(--navy);color:#fff;font-weight:600}
+
+/* hero */
+.hero{display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:center}
+.rankbox{text-align:center;padding-right:18px;border-right:1px solid var(--line)}
+.rankbox .lbl{font-size:12px;color:var(--mute);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.rankbox .big{font-family:'DM Mono',monospace;font-size:44px;color:var(--navy);line-height:1.1}
+.rankbox .big small{font-size:20px;color:var(--mute)}
+.pill{display:inline-block;font-size:12px;font-weight:600;padding:4px 10px;border-radius:999px;margin-top:4px}
+.pill.top{background:#fff3cc;color:#8a6200}.pill.good{background:#e6edfb;color:var(--navy)}
+.pill.mid{background:var(--flat-bg);color:#4b5563}.pill.low{background:var(--down-bg);color:var(--down)}
+.hero-r{display:flex;gap:12px;align-items:center;justify-content:space-between}
+.hero-r .line1{font-size:14px;margin-bottom:6px}
+.chg{display:inline-flex;align-items:center;gap:4px;font-size:13px;font-weight:600;padding:3px 9px;border-radius:999px}
+.skill .chg,.hero .chg{display:inline-block;border-radius:10px;padding:4px 9px;line-height:1.45}
+.chg .fr{white-space:nowrap;font-weight:500}
+.chg.up{background:var(--up-bg);color:var(--up)}.chg.down{background:var(--down-bg);color:var(--down)}.chg.flat{background:var(--flat-bg);color:var(--flat)}
+
+/* comment */
+.cmt{margin-top:14px;border-left:4px solid var(--gold);background:#fffdf6}
+.cmt h2{font-size:14px;color:var(--navy);margin-bottom:6px}
+.cmt p{margin:0;white-space:pre-line}
+
+/* skills */
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.skill{padding:16px;border-top:4px solid var(--c)}
+.sk-body{display:flex;gap:8px;align-items:center;justify-content:space-between}
+.sk-meta{margin-bottom:6px}
+.sk-raw{font-size:12px;color:var(--mute);margin:-2px 0 6px}
+.tests{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;padding-top:10px;border-top:1px dashed var(--line)}
+.tests span{font-size:12px;background:#f6f3ea;border-radius:6px;padding:3px 8px;color:var(--mute)}
+.tests b{color:var(--ink);font-weight:600}
+.tests .zero{background:var(--down-bg);color:var(--down)}.tests .zero b{color:var(--down)}
+.notes .ck{font-size:14px;margin-bottom:6px}.notes .ok{color:var(--up)}.notes .no{color:var(--down)}
+.hw-top{display:flex;justify-content:space-between;align-items:flex-end;gap:14px;flex-wrap:wrap}
+.hw-big{font-size:38px;color:var(--navy);line-height:1.1}.hw-big small{font-size:16px;color:var(--mute)}
+.hw-lbl{font-size:14px;color:var(--mute)}.hw-lbl b{font-size:16px}
+.hw-up{color:var(--up)}.hw-mid{color:#b45309}.hw-down{color:var(--down)}
+.hw-facts{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--mute);text-align:right}
+.hw-facts b{color:var(--ink)}.hw-facts .bad b{color:var(--down)}.hw-facts .good{color:var(--up)}
+.bar{position:relative;height:12px;background:#eee8da;border-radius:99px;margin:14px 0 4px}
+.bar i{position:absolute;left:0;top:0;bottom:0;border-radius:99px}
+.bar i.hw-up{background:#22a05a}.bar i.hw-mid{background:#e3a008}.bar i.hw-down{background:#dc2626}
+.bar em{position:absolute;top:-4px;bottom:-4px;width:0;border-left:2px dashed var(--ink);cursor:pointer}
+.bar-lg{display:flex;justify-content:space-between;font-size:11px;color:var(--mute)}
+.items td{white-space:normal}.items td:first-child{color:var(--navy);width:56px}
+.items tr:not(.nd1) td{border-top:0}.items tr.nd1 td{border-top:1px solid var(--line)}
+.items tbody tr td{border-bottom:0}.items td:nth-child(2),.items th:nth-child(2){text-align:left}
+.t10{font-size:12px;color:var(--mute)}
+.bdg{display:inline-block;font-size:12px;font-weight:600;border-radius:99px;padding:2px 9px}
+.bdg.bad{background:var(--down-bg);color:var(--down)}.bdg.warn{background:#fff3d6;color:#9a5b00}
+.bdg.good{background:var(--up-bg);color:var(--up)}.bdg.off{background:var(--flat-bg);color:#6b7280}
+@media (max-width:560px){.hw-facts{text-align:left}}
+.nl{list-style:none;margin:6px 0 0;padding:0}
+.nl li{display:grid;grid-template-columns:52px 1fr;gap:2px 10px;padding:8px 0;border-top:1px solid var(--line);font-size:14px}
+.nd{font-family:'DM Mono',monospace;color:var(--navy);grid-row:span 2}
+.nm{font-weight:600}.nm.z{color:var(--down)}
+.nc{font-size:12px;color:var(--mute)}
+.sk-h{display:flex;align-items:baseline;gap:6px}
+.sk-h b{font-size:15px}.sk-h .en{font-size:12px;color:var(--mute)}
+.sk-score{font-family:'DM Mono',monospace;font-size:30px;color:var(--c);margin:4px 0 2px}
+.sk-score small{font-size:15px;color:var(--mute)}
+.sk-meta{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:13px}
+.rank{font-weight:600}
+.sk-foot{font-size:12px;color:var(--mute)}
+
+/* strip (vị trí trong lớp) */
+.strip{width:112px;height:auto;display:block;flex:0 0 auto}
+.strip .track{stroke:#e5dfcf;stroke-width:6;stroke-linecap:round}
+.strip .avg{stroke:var(--ink);stroke-width:2;stroke-dasharray:3 2}
+.strip .me{fill:var(--gold-2);stroke:var(--navy);stroke-width:2.5}
+.strip text{font-size:10px;fill:var(--mute);font-family:'Be Vietnam Pro',sans-serif}
+.strip text.me-l{fill:var(--navy);font-weight:700}
+.strip .me-ring{fill:none;stroke-width:3}.strip .me-ring.hi{stroke:#16a34a}.strip .me-ring.lo{stroke:#dc2626}
+.lowb{display:inline-block;margin-top:8px;font-size:13px;background:var(--down-bg);color:var(--down);border:1px solid #f3c4c4;border-radius:99px;padding:3px 10px}
+.topb{display:inline-block;margin-top:8px;font-size:13px;background:#fff6dc;color:#7a5b00;border:1px solid #f1d58a;border-radius:99px;padding:3px 10px}
+.strip [data-tip]{cursor:pointer}
+.ends{font-size:12px;color:var(--mute);margin-top:6px;line-height:1.7}
+.ends i{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px}
+.ends b{color:var(--ink);font-weight:500;white-space:nowrap;font-family:'Be Vietnam Pro',sans-serif}
+.strip-lg{display:flex;flex-wrap:wrap;gap:12px;font-size:12px;color:var(--mute);margin-top:10px}
+.strip-lg i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px;vertical-align:-1px}
+.lg-me{background:var(--gold-2);border:2px solid var(--navy)}
+.strip .end-hi,.lg-hi{fill:#16a34a;background:#16a34a;opacity:.85}
+.strip .end-lo,.lg-lo{fill:#dc2626;background:#dc2626;opacity:.75}
+.strip-lg i.lg-avg{width:14px;height:0;border-radius:0;border-top:2px dashed var(--ink);vertical-align:3px}
+#tip{position:fixed;z-index:50;pointer-events:none;background:var(--navy);color:#fff;font-size:12px;font-weight:600;padding:5px 9px;border-radius:8px;white-space:nowrap;transform:translate(-50%,-130%);display:none}
+
+/* overview */
+.ov-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px}
+.verdict{font-size:15px;font-weight:600}
+.seg{display:inline-flex;border:1px solid #d6cfbd;border-radius:999px;overflow:hidden}
+.seg button{border:0;background:#fff;padding:6px 12px;font-size:13px}
+.seg button.on{background:var(--navy);color:#fff}
+.chart{width:100%;height:auto;display:block;margin-top:6px}
+.chart .grid-l{stroke:#eee8da}.chart .ax{font-size:11px;fill:var(--mute);font-family:'Be Vietnam Pro',sans-serif}
+.legend{display:flex;flex-wrap:wrap;gap:12px;font-size:12px;color:var(--mute);margin:8px 0 2px}
+.legend i{display:inline-block;width:14px;height:3px;border-radius:2px;margin-right:5px;vertical-align:middle}
+.tbl-w{overflow-x:auto;margin-top:14px}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{padding:9px 8px;border-bottom:1px solid var(--line);text-align:center;white-space:nowrap}
+th{font-size:12px;color:var(--mute);font-weight:600}
+td:first-child,th:first-child{text-align:left}
+tr.sum td{background:#faf8f2;font-weight:600}
+.a{font-size:11px;margin-left:3px}
+.a.up{color:var(--up)}.a.down{color:var(--down)}.a.flat{color:var(--flat)}
+.trend{font-weight:600;font-size:12px}
+.note{font-size:12px;color:var(--mute);margin-top:10px}
+.foot{text-align:center;font-size:12px;color:var(--mute);margin-top:30px}
+
+@media (max-width:560px){
+  .grid{grid-template-columns:1fr}
+  .hero{grid-template-columns:1fr}
+  .rankbox{border-right:0;border-bottom:1px solid var(--line);padding:0 0 12px}
+  .hello h1{font-size:23px}
+}
+</style>
+</head>
+<body>
+<header class="top"><div class="top-in"><span class="logo">G<b>.</b>EDU</span><span class="top-t">Theo dõi tình hình học tập</span></div></header>
+
+<main>
+  <div id="demo" class="demo" hidden>Chế độ xem thử: chưa dán link Web App vào <b>API_URL</b>, đang dùng dữ liệu mẫu. Nhập bất kỳ thông tin nào để xem.</div>
+
+  <!-- ĐĂNG NHẬP -->
+  <section id="locked" class="card login lockbox" hidden>
+    <div class="lk-ic">🔒</div>
+    <h1>Hiện chưa mở xem điểm</h1>
+    <p id="lockMsg" class="lead"></p>
+  </section>
+  <section id="login" class="card login">
+    <h1>Tra cứu kết quả học tập</h1>
+    <p class="lead">Quý phụ huynh vui lòng nhập thông tin của học sinh.</p>
+    <div id="fLogin">
+      <div id="lopFixed" class="lopfix" hidden></div>
+      <label class="f" id="lopBox"><span>Lớp</span>
+        <input id="iLop" required autocapitalize="characters" placeholder="VD: FOG3-A">
+      </label>
+      <label class="f"><span>Họ và tên học sinh</span>
+        <div class="combo">
+          <input id="iTen" required autocomplete="off" placeholder="Họ tên đầy đủ, có dấu — VD: Nguyễn Minh An">
+          <ul id="nameList" class="nlist" hidden></ul>
+        </div>
+      </label>
+      <label class="f"><span id="sdtLbl">4 số cuối SĐT phụ huynh</span>
+        <input id="iSdt" required inputmode="numeric" maxlength="4" pattern="\d{4}" placeholder="VD: 1234">
+      </label>
+      <button class="btn" id="bGo" type="button">Xem báo cáo</button>
+      <div class="err" id="err"></div>
+    </div>
+  </section>
+
+  <!-- BÁO CÁO -->
+  <section id="report" hidden></section>
+  <div id="tip"></div>
+  <div class="foot">G.EDU Language Center · 306 Đống Đa, Đà Nẵng</div>
+</main>
+
+<script>
+/* ===== DÁN LINK WEB APP (Apps Script > Deploy > Web app) VÀO ĐÂY ===== */
+const API_URL = 'https://script.google.com/macros/s/AKfycbx-39k8P9huz-rNAAhHKimbO0hWWrDfbi7TlNTYIevj8EeyHfG_MZCbYIyzH0RpxEQQBg/exec';
+/* ===================================================================== */
+
+const SKILL = {
+  grammar:   { label: 'Ngữ pháp', en: 'Grammar',   full: 'BTVN Ngữ pháp' },
+  reading:   { label: 'Đọc',      en: 'Reading',   full: 'BTVN Đọc' },
+  listening: { label: 'Nghe',     en: 'Listening', full: 'BTVN Nghe' },
+  vocab:     { label: 'Từ vựng',  en: 'Vocab',     full: 'Dò Từ vựng' }
+};
+const GROUPS = [
+  { title: 'Bài tập về nhà (BTVN)', keys: ['grammar', 'listening', 'reading'] },
+  { title: 'Dò bài', keys: ['vocab'], dg: true }
+];
+const ORDER = ['grammar', 'reading', 'listening', 'vocab'];
+const DEMO = !API_URL;
+const $ = s => document.querySelector(s);
+let state = {};
+
+/* ---------- tiện ích ---------- */
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const fmt = v => v == null ? '—' : String(Math.round(v * 10) / 10).replace('.', ',');
+const shortM = k => { const [y, m] = k.split('-'); return 'T' + Number(m) + '/' + y.slice(2); };
+const tabM = k => { const [y, m] = k.split('-'); return 'Tháng ' + Number(m) + '/' + y; };
+const store = {
+  get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
+  set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+};
+function dir(diff, thr) { return diff > thr ? 'up' : diff < -thr ? 'down' : 'flat'; }
+function arrow(diff, thr = 1) {
+  const d = dir(diff, thr);
+  return `<span class="a ${d}">${d === 'up' ? '▲' : d === 'down' ? '▼' : '–'}</span>`;
+}
+// pct 0-100 → điểm thang 10, kèm câu giải thích rõ: "▲ Tăng 1 điểm so với T9/26 (7,5 → 8,5)"
+function change(curPct, prevPct, prevKey) {
+  const a = Math.round(prevPct) / 10, b = Math.round(curPct) / 10, df = Math.round((b - a) * 10) / 10;
+  const span = `<span class="fr">(${fmt(a)} → ${fmt(b)})</span>`;
+  if (Math.abs(df) < 0.1) return `<span class="chg flat">– Giữ nguyên so với ${shortM(prevKey)} ${span}</span>`;
+  return `<span class="chg ${df > 0 ? 'up' : 'down'}">${df > 0 ? '▲ Tăng' : '▼ Giảm'} ${fmt(Math.abs(df))} điểm so với ${shortM(prevKey)} ${span}</span>`;
+}
+// Dòng chữ top 3 cao nhất / thấp nhất (thang 10, ẩn tên)
+function endsText(e) {
+  if (!e) return '';
+  const j = a => a.map(p => fmt(p / 10)).join('; ');
+  return `<div class="ends"><div><i class="lg-hi"></i>Top 3 cao nhất: <b class="num">${j(e.hi)}</b></div>`
+       + (e.lo.length ? `<div><i class="lg-lo"></i>Top 3 thấp nhất: <b class="num">${j(e.lo)}</b></div>` : '') + '</div>';
+}
+// Danh sách từng bài trong tháng: ngày · tên bài · điểm/tổng
+function testList(tests) {
+  if (!tests || !tests.length) return '';
+  return `<div class="tests">${tests.map(t => `<span class="${t.z ? 'zero' : ''}">${esc(t.d)}${t.t ? ' · ' + esc(t.t) : ''} <b>${fmt(t.s)}/${fmt(t.mx)}</b>${t.z ? ' (chưa làm)' : ''}</span>`).join('')}</div>`;
+}
+function skillCard(k, s, ps, prev) {
+  const delta = ps ? change(s.pct, ps.pct, prev.key) : '';
+  return `<article class="card skill" style="--c:var(--c-${k})">
+            <div class="sk-h"><b>${SKILL[k].label}</b><span class="en">${SKILL[k].en}</span></div>
+            <div class="sk-body"><div>
+              <div class="sk-score">${fmt(s.score)}<small>/${fmt(s.max)}</small></div>
+              ${s.tests && s.tests.length > 1 ? `<div class="sk-raw">Trung bình ${s.tests.length} bài</div>` : ''}
+              ${delta}
+              ${topBadge(s.ends, s.pct)}
+            </div>${strip(s.ends, s.pct, s.avg)}</div>
+          </article>`;
+}
+// Dò bài Ngữ pháp: OK / chưa kĩ → số buổi thuộc kĩ
+function dgCard(ck, pk, prev) {
+  let delta = '';
+  if (pk && pk.total) {
+    const a = Math.round(pk.ok / pk.total * 100), b = Math.round(ck.ok / ck.total * 100), df = b - a;
+    delta = Math.abs(df) < 1 ? `<span class="chg flat">– Giữ nguyên so với ${shortM(prev.key)}</span>`
+      : `<span class="chg ${df > 0 ? 'up' : 'down'}">${df > 0 ? '▲ Tăng' : '▼ Giảm'} so với ${shortM(prev.key)} <span class="fr">(${pk.ok}/${pk.total} → ${ck.ok}/${ck.total} buổi)</span></span>`;
+  }
+  const hasCls = ck.n > 1;
+  return `<article class="card skill" style="--c:var(--c-dg)">
+            <div class="sk-h"><b>Ngữ pháp</b><span class="en">Grammar</span></div>
+            <div class="sk-body"><div>
+              <div class="sk-score">${ck.ok}<small>/${ck.total} buổi</small></div>
+              <div class="sk-raw">thuộc kĩ${ck.chuaki ? ` · <span style="color:var(--down)">chưa kĩ ${ck.chuaki} buổi</span>` : ''}</div>
+              ${delta}
+              ${hasCls ? topBadge(ck.ends, ck.pct) : ''}
+            </div>${hasCls ? strip(ck.ends, ck.pct, ck.avg, true) : ''}</div>
+          </article>`;
+}
+// Tỉ lệ hoàn thành BTVN trong tháng
+function hwCard(m) {
+  const w = m.hw;
+  if (!w || w.rate == null) return '';
+  const need = w.done + w.zero + w.miss, notDone = w.zero + w.miss;
+  const lvl = w.rate >= 90 ? 'up' : w.rate >= 70 ? 'mid' : 'down';
+  let h = `<h2 class="sec">Hoàn thành bài tập về nhà · ${tabM(m.key)}</h2><section class="card hw">
+    <div class="hw-top">
+      <div><div class="hw-big num">${w.done}<small>/${need} bài</small></div>
+        <div class="hw-lbl">đã làm · <b class="hw-${lvl}">${fmt(w.rate)}%</b></div></div>
+      <div class="hw-facts">
+        <span>Tháng này lớp có <b>${w.cols}</b> bài BTVN</span>
+        ${notDone ? `<span class="bad">Không làm: <b>${notDone}</b> bài</span>` : `<span class="good">Không thiếu bài nào</span>`}
+        ${w.absent ? `<span>Vắng: <b>${w.absent}</b> bài (không tính)</span>` : ''}
+      </div>
+    </div>
+    <div class="bar"><i class="hw-${lvl}" style="width:${Math.max(2, w.rate)}%"></i></div>
+    <div class="bar-lg"><span>0%</span><span>100%</span></div>
+    <p class="note">Tỉ lệ hoàn thành = số bài đã làm ÷ số bài phải làm (buổi vắng không tính). Chi tiết từng bài ở bảng bên dưới.</p>
+  </section>`;
+  return h;
+}
+// Bảng chi tiết tất cả cột điểm trong tháng
+const KIND = { grammar: 'BTVN Ngữ pháp', listening: 'BTVN Nghe', reading: 'BTVN Đọc', vocab: 'BTVN Từ vựng' };
+function itemsCard(m) {
+  const it = m.items || [];
+  if (!it.length) return '';
+  const kind = x => x.sk !== 'dobai' ? KIND[x.sk] : (x.st === 'done' ? 'Dò Từ vựng' : (x.st === 'ok' || x.st === 'chuaki') ? 'Dò Ngữ pháp' : 'Dò bài');
+  const res = x => {
+    if (x.st === 'done') return `<b class="num">${fmt(x.v)}/${fmt(x.mx)}</b>${x.mx !== 10 ? ` <span class="t10">(${fmt(x.v / x.mx * 10)}/10)</span>` : ''}`;
+    if (x.st === 'zero') return `<span class="bdg bad">Chưa làm</span>`;
+    if (x.st === 'miss') return `<span class="bdg warn">${esc(x.mark)}</span>`;
+    if (x.st === 'ok') return `<span class="bdg good">Thuộc kĩ</span>`;
+    if (x.st === 'chuaki') return `<span class="bdg warn">Chưa kĩ</span>`;
+    return `<span class="bdg off">${x.mark === '/' || x.mark === '-' ? 'Vắng' : esc(x.mark)}</span>`;
+  };
+  let last = '';
+  const rows = it.map(x => { const d = x.d === last ? '' : x.d; last = x.d;
+    return `<tr class="${d ? 'nd1' : ''}"><td class="num">${d}</td><td>${kind(x)}</td><td>${esc(x.t)}</td><td>${res(x)}</td></tr>`; }).join('');
+  return `<h2 class="sec">Chi tiết các cột điểm · ${tabM(m.key)}</h2><section class="card items"><div class="tbl-w" style="margin-top:0"><table>
+    <thead><tr><th>Ngày</th><th>Nội dung</th><th>Bài</th><th>Kết quả</th></tr></thead><tbody>${rows}</tbody></table></div></section>`;
+}
+function tier(rank, n) {
+  if (n < 2) return { t: 'Lớp có 1 học sinh', c: 'mid' };
+  const p = (rank - 1) / (n - 1);
+  if (p <= .25) return { t: 'Nhóm dẫn đầu lớp', c: 'top' };
+  if (p <= .5)  return { t: 'Khá trong lớp', c: 'good' };
+  if (p <= .75) return { t: 'Trung bình trong lớp', c: 'mid' };
+  return { t: 'Cần cố gắng thêm', c: 'low' };
+}
+
+/* ---------- API ---------- */
+async function api(params) {
+  const r = await fetch(API_URL + '?' + new URLSearchParams(params));
+  return r.json();
+}
+
+/* ---------- khởi động ---------- */
+// Link riêng từng lớp: ...trang.html?lop=FOG3-A
+const LOP_LINK = (() => { try { return (new URLSearchParams(location.search).get('lop') || '').trim(); } catch (e) { return ''; } })()
+  || (DEMO ? 'FOG3-A' : '');                        // bản demo: mô phỏng link lớp FOG3-A
+let NAMES = [], PH = {};                           // PH: tên học sinh → tên phụ huynh (của SĐT)
+// Hiện tên phụ huynh ở ô SĐT sau khi chọn tên con
+function showParent() {
+  const n = tenVal(), p = n && PH[n];
+  $('#sdtLbl').innerHTML = p ? `4 số cuối SĐT của phụ huynh <b class="ph">${esc(p)}</b>` : '4 số cuối SĐT phụ huynh';
+}                                    // danh sách tên của lớp (khi mở bằng link lớp)
+const nk = s => ' ' + String(s).replace(/Đ/g, 'D').replace(/đ/g, 'd').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/\s+/g, ' ').trim();
+// Gõ "A", "Văn A", "van a" đều ra "Nguyễn Trinh Văn A" (khớp từ đầu một chữ bất kỳ, không cần dấu)
+function matchNames(q) {
+  const k = nk(q).trim();
+  if (!k) return [];                                 // chưa gõ gì → không hiện danh sách lớp
+  const hit = NAMES.filter(n => nk(n).includes(' ' + k));
+  return hit.sort((a, b) => (nk(b).endsWith(' ' + k) - nk(a).endsWith(' ' + k)));
+}
+function tenVal() {
+  const v = $('#iTen').value.trim();
+  if (!NAMES.length) return v;
+  if (NAMES.includes(v)) return v;
+  const m = matchNames(v);
+  return m.length === 1 ? m[0] : '';               // gõ dở mà chỉ khớp 1 bạn → lấy bạn đó
+}
+let hi = -1;
+function openList() {
+  if (!NAMES.length) return;
+  const q = $('#iTen').value.trim(), ul = $('#nameList');
+  if (!q) { ul.hidden = true; hi = -1; return; }
+  const m = matchNames(q);
+  hi = m.length ? 0 : -1;
+  ul.innerHTML = m.length ? m.map((n, i) => `<li data-n="${esc(n)}" class="${i === 0 ? 'on' : ''}">${esc(n)}</li>`).join('')
+                          : '<li class="none">Không có tên phù hợp</li>';
+  ul.hidden = false;
+}
+function pickName(n) { $('#iTen').value = n; $('#nameList').hidden = true; showParent(); $('#iSdt').focus(); }
+
+async function initClassLink() {
+  $('#iLop').value = LOP_LINK;
+  $('#lopBox').hidden = true;
+  const box = $('#lopFixed'); box.hidden = false; box.innerHTML = `Lớp <b>${esc(LOP_LINK)}</b>`;
+  try {
+    let ph = [];
+    if (DEMO) { NAMES = ['Nguyễn Trinh Văn A', 'Nguyễn Minh An', 'Trần Bảo Châu', 'Lê Gia Huy', 'Phạm Văn Anh'];
+                ph = ['Huỳnh Văn A', 'Trần Thị Lan', 'Lê Thu Hà', '', 'Phạm Minh Tuấn']; }
+    else { const r = await api({ action: 'names', lop: LOP_LINK }); if (r.locked) { showLocked(r.msg); return; } if (r.ok) { NAMES = r.names || []; ph = r.ph || []; if (r.lop) box.innerHTML = `Lớp <b>${esc(r.lop)}</b>`; } }
+    NAMES.forEach((n, i) => { if (ph[i]) PH[n] = ph[i]; });
+  } catch (e) { /* lỗi mạng → vẫn cho gõ tên đầy đủ */ }
+  if (!NAMES.length) return;
+  const inp = $('#iTen'), ul = $('#nameList');
+  inp.placeholder = 'Gõ tên con (VD: An, Văn An)';
+  const st = store.get('gedu_pr_ten');
+  if (st && !NAMES.includes(st)) inp.value = '';
+  showParent();
+  inp.addEventListener('focus', openList);
+  inp.addEventListener('click', openList);
+  inp.addEventListener('input', () => { openList(); showParent(); });
+  inp.addEventListener('keydown', e => {
+    const lis = [...ul.querySelectorAll('li[data-n]')];
+    if (ul.hidden || !lis.length) return;
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      hi = (hi + (e.key === 'ArrowDown' ? 1 : -1) + lis.length) % lis.length;
+      lis.forEach((li, i) => li.classList.toggle('on', i === hi)); lis[hi].scrollIntoView({ block: 'nearest' });
+    } else if (e.key === 'Enter' && hi >= 0) { e.preventDefault(); e.stopImmediatePropagation(); pickName(lis[hi].dataset.n); }
+    else if (e.key === 'Escape') ul.hidden = true;
+  });
+  ul.addEventListener('mousedown', e => { const li = e.target.closest('li[data-n]'); if (li) { e.preventDefault(); pickName(li.dataset.n); } });
+  document.addEventListener('click', e => { if (!e.target.closest('.combo')) ul.hidden = true; });
+}
+
+// Link đang khóa → hiện thông báo thay cho ô đăng nhập
+function showLocked(msg) {
+  $('#login').hidden = true; $('#report').hidden = true; $('#locked').hidden = false;
+  $('#lockMsg').textContent = msg || 'Trung tâm hiện chưa mở xem kết quả học tập.';
+}
+
+// Bản demo: nút chuyển xem thử trạng thái link mở / khóa
+function demoSwitch() {
+  const d = $('#demo');
+  d.insertAdjacentHTML('beforeend', `<div class="dsw">Xem thử trạng thái link:
+    <button type="button" data-st="open" class="on">🔓 Đang mở</button><button type="button" data-st="lock">🔒 Đang khóa</button></div>`);
+  d.querySelectorAll('.dsw button').forEach(b => b.onclick = () => {
+    d.querySelectorAll('.dsw button').forEach(x => x.classList.toggle('on', x === b));
+    if (b.dataset.st === 'lock') showLocked('Kết quả học tập sẽ được mở từ 08:00 ngày 25/10/2026 đến 22:00 ngày 31/10/2026.\nQuý phụ huynh vui lòng quay lại trong thời gian trung tâm mở xem điểm.');
+    else { $('#locked').hidden = true; $('#report').hidden = true; $('#login').hidden = false; }
+  });
+}
+
+async function init() {
+  if (DEMO) { $('#demo').hidden = false; demoSwitch(); }
+  if (!DEMO) {
+    try { const st = await api({ action: 'status' }); if (st && st.locked) { showLocked(st.msg); return; } }
+    catch (e) { /* lỗi mạng → vẫn hiện ô đăng nhập */ }
+  }
+  const sl = store.get('gedu_pr_lop'), st = store.get('gedu_pr_ten');
+  if (sl) $('#iLop').value = sl;
+  if (st) $('#iTen').value = st;
+  if (LOP_LINK) initClassLink();
+  // Không dùng submit form (khung xem trước / một số trình duyệt chặn) → bắt click + Enter
+  $('#bGo').addEventListener('click', onLogin);
+  ['#iLop', '#iTen', '#iSdt'].forEach(s => $(s).addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !(s === '#iTen' && !$('#nameList').hidden)) onLogin(e);   // đang mở danh sách tên → Enter để chọn tên
+  }));
+}
+
+async function onLogin(e) {
+  if (e && e.preventDefault) e.preventDefault();
+  const lop = $('#iLop').value.trim(), ten = tenVal(), sdt = $('#iSdt').value.trim();
+  const btn = $('#bGo'); $('#err').textContent = '';
+  if (!lop || !ten || !/^\d{4}$/.test(sdt)) { $('#err').textContent = LOP_LINK ? (NAMES.length && !ten ? 'Vui lòng chọn đúng tên con trong danh sách.' : 'Vui lòng chọn tên học sinh và nhập 4 số cuối SĐT phụ huynh.') : 'Vui lòng nhập đủ Lớp, Họ tên và 4 số cuối SĐT phụ huynh.'; return; }
+  btn.disabled = true; btn.textContent = 'Đang tải...';
+  try {
+    const data = DEMO ? buildDemo(ten || 'Nguyễn Minh An', lop || 'FOG3-A') : await api({ lop, ten, sdt });
+    if (data.locked) { showLocked(data.msg); return; }
+    if (!data.ok) throw new Error(data.msg);
+    store.set('gedu_pr_lop', lop); store.set('gedu_pr_ten', ten);
+    show(data);
+  } catch (x) {
+    $('#err').textContent = x.message || 'Lỗi kết nối. Vui lòng thử lại.';
+  } finally {
+    btn.disabled = false; btn.textContent = 'Xem báo cáo';
+  }
+}
+
+function show(data) {
+  $('#login').hidden = true; $('#report').hidden = false;
+  if (!data.months.length) {
+    $('#report').innerHTML = `<div class="card"><b>${esc(data.student.ten)}</b> — chưa có điểm nào được cập nhật.
+      <p><button class="ghost" id="logout">Tra cứu khác</button></p></div>`;
+    $('#logout').onclick = logout; return;
+  }
+  state = { data, sel: data.months.length - 1, range: Math.min(3, data.months.length) };
+  render(); window.scrollTo(0, 0);
+}
+function logout() { $('#report').hidden = true; $('#login').hidden = false; $('#iSdt').value = ''; }
+
+/* ---------- SVG: vị trí trong lớp ---------- */
+// Vị trí của con nếu nằm trong top 3 cao / thấp: {k:'hi'|'lo', text:'Cao nhất lớp', tie: số bạn bằng điểm}
+function conPos(ends, mine) {
+  if (!ends) return null;
+  const m = Math.round(mine * 10) / 10;
+  for (const [k, word] of [['hi', 'Cao'], ['lo', 'Thấp']]) {
+    const arr = ends[k] || [], i = arr.indexOf(m);
+    if (i < 0) continue;
+    let j = i; while (j + 1 < arr.length && arr[j + 1] === m) j++;
+    const n = arr.filter(v => v === m).length;
+    return { k, text: i === 0 ? `${word} nhất lớp` : `${word} thứ ${i + 1} lớp`, tie: n - 1 };
+  }
+  return null;
+}
+// Huy hiệu khi con nằm trong top 3 cao nhất
+function topBadge(ends, mine) {
+  const c = conPos(ends, mine);
+  if (!c) return '';
+  const tie = c.tie ? ` (bằng điểm ${c.tie} bạn)` : '';
+  if (c.k === 'hi') return `<div class="topb">🏅 Con đứng <b>${c.text.toLowerCase()}</b>${tie}</div>`;
+  return `<div class="lowb">📌 Con đang ở vị trí <b>${c.text.toLowerCase()}</b>${tie} · cần cố gắng thêm</div>`;
+}
+function strip(ends, mine, avg, asPct, tall) {
+  ends = ends || { hi: [], lo: [] };
+  const lab = p => asPct ? fmt(p) + '%' : fmt(p / 10) + '/10';
+  const W = 112, H = tall ? 240 : 170, X = 56, T = 22, B = 22;
+  // Chỉ hiện: con, TB lớp, top 3 cao nhất (xanh), top 3 thấp nhất (đỏ) — ẩn tên
+  const all = [mine, avg].concat(ends.hi, ends.lo);
+  const lo = Math.max(0, Math.min(...all) - 5), hi = Math.min(100, Math.max(...all) + 5);
+  const y = p => T + (H - T - B) * (1 - (p - lo) / ((hi - lo) || 1));
+  const ty = p => Math.max(T + 4, Math.min(H - B + 2, y(p) + 4));
+  let s = `<svg class="strip${tall ? ' tall' : ''}" viewBox="0 0 ${W} ${H}" role="img" aria-label="Vị trí của con so với các bạn trong lớp">`;
+  s += `<text x="${X}" y="12" text-anchor="middle">Cao</text><text x="${X}" y="${H - 4}" text-anchor="middle">Thấp</text>`;
+  s += `<line class="track" x1="${X}" x2="${X}" y1="${T}" y2="${H - B}"/>`;
+  // Mỗi chấm = 1 vị trí: cao nhất / cao thứ 2 / cao thứ 3 (đỏ: thấp nhất...). Bạn bằng điểm gộp 1 chấm. Không hiện con số.
+  [['hi', 'Cao'], ['lo', 'Thấp']].forEach(([k, word]) => {
+    const arr = ends[k]; let i = 0;
+    while (i < arr.length) {
+      let j = i; while (j + 1 < arr.length && arr[j + 1] === arr[i]) j++;
+      const pos = i === 0 ? `${word} nhất lớp` : `${word} thứ ${i + 1} lớp`;
+      const tip = pos + (j > i ? ` (${j - i + 1} bạn bằng điểm)` : '');
+      s += `<circle class="end-${k}" cx="${X}" cy="${y(arr[i]).toFixed(1)}" r="5" data-tip="${tip}"/>`;
+      i = j + 1;
+    }
+  });
+  s += `<line class="avg" x1="${X - 11}" x2="${X + 11}" y1="${y(avg)}" y2="${y(avg)}"/><rect x="${X - 14}" y="${y(avg) - 5}" width="28" height="10" fill="transparent" data-tip="Trung bình lớp"/>`;
+  s += `<text x="${X - 14}" y="${ty(avg)}" text-anchor="end">TB lớp</text>`;
+  // Con nằm trong top 3 → chấm vàng có viền xanh (hoặc đỏ), tooltip ghi rõ vị trí
+  const cp = conPos(ends, mine);
+  if (cp) s += `<circle class="me-ring ${cp.k}" cx="${X}" cy="${y(mine)}" r="11"/>`;
+  s += `<circle class="me" cx="${X}" cy="${y(mine)}" r="7.5" data-tip="Con: ${lab(mine)}${cp ? ' · ' + cp.text + (cp.tie ? ` (bằng điểm ${cp.tie} bạn)` : '') : ''}"/>`;
+  s += `<text class="me-l" x="${X + 13}" y="${ty(mine)}">Con</text>`;
+  return s + '</svg>';
+}
+
+/* ---------- SVG: biểu đồ đường qua các tháng ---------- */
+function lineChart(list) {
+  const sm = window.innerWidth < 560, W = sm ? 360 : 640, H = sm ? 230 : 270, L = 38, R = 18, T = 14, B = 30, n = list.length;
+  const keys = ORDER.filter(k => list.some(m => m.skills[k]));
+  const vals = [];
+  list.forEach(m => { keys.forEach(k => m.skills[k] && vals.push(m.skills[k].pct)); vals.push(m.overall.pct); });
+  const lo = Math.max(0, Math.floor((Math.min(...vals) - 8) / 10) * 10), hi = 100;
+  const x = i => n === 1 ? (L + W - R) / 2 : L + (W - L - R) * i / (n - 1);
+  const y = p => T + (H - T - B) * (1 - (p - lo) / (hi - lo));
+  let s = `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Điểm các kỹ năng qua các tháng">`;
+  for (let g = lo; g <= hi; g += (hi - lo) / 4) {
+    s += `<line class="grid-l" x1="${L}" x2="${W - R}" y1="${y(g)}" y2="${y(g)}"/>`;
+    s += `<text class="ax" x="${L - 8}" y="${y(g) + 4}" text-anchor="end">${fmt(g / 10)}</text>`;
+  }
+  list.forEach((m, i) => s += `<text class="ax" x="${x(i)}" y="${H - 10}" text-anchor="middle">${shortM(m.key)}</text>`);
+  const series = keys.map(k => ({ k, c: `var(--c-${k})`, get: m => m.skills[k] && m.skills[k].pct, name: SKILL[k].full, w: 2.5 }))
+    .concat([{ k: 'overall', c: 'var(--c-overall)', get: m => m.overall.pct, name: 'Trung bình', w: 2, dash: '5 4' }]);
+  series.forEach(se => {
+    let d = '', pen = false;
+    list.forEach((m, i) => { const v = se.get(m); if (v == null) { pen = false; return; } d += (pen ? 'L' : 'M') + x(i).toFixed(1) + ' ' + y(v).toFixed(1); pen = true; });
+    s += `<path d="${d}" fill="none" stroke="${se.c}" stroke-width="${se.w}" ${se.dash ? `stroke-dasharray="${se.dash}"` : ''} stroke-linejoin="round" stroke-linecap="round"/>`;
+    list.forEach((m, i) => { const v = se.get(m); if (v == null) return;
+      s += `<circle cx="${x(i)}" cy="${y(v)}" r="4" fill="#fff" stroke="${se.c}" stroke-width="2.2"><title>${se.name} · ${tabM(m.key)}: ${fmt(v / 10)}/10</title></circle>`; });
+  });
+  s += '</svg>';
+  s += `<div class="legend">${series.map(se => `<span><i style="background:${se.c}"></i>${se.name}</span>`).join('')}</div>`;
+  return s;
+}
+
+/* ---------- RENDER ---------- */
+function render() {
+  const d = state.data, M = d.months, i = state.sel, cur = M[i], prev = M[i - 1] || null;
+  const keys = ORDER.filter(k => cur.skills[k]);
+  let h = '';
+
+  h += `<div class="hello"><div>
+          <div class="eyebrow">Báo cáo học tập</div>
+          <h1>${esc(d.student.ten)}</h1><div class="sub">Lớp ${esc(d.student.lop)}</div>
+        </div><button class="ghost" id="logout">Tra cứu khác</button></div>`;
+
+  h += `<div class="tabs">${M.map((m, j) => `<button class="mtab ${j === i ? 'on' : ''}" data-i="${j}">${tabM(m.key)}</button>`).join('')}</div>`;
+
+  // --- vị trí tổng ---
+  const o = cur.overall, t = tier(o.rank, o.n);
+  let chg = '';
+  if (prev) {
+    chg = change(o.pct, prev.overall.pct, prev.key);
+  }
+  h += `<section class="card hero">
+          <div class="rankbox">
+            <span class="pill ${t.c}">${t.t}</span></div>
+          <div class="hero-r"><div>
+            <div class="line1">Điểm trung bình các kỹ năng: <b class="num">${fmt(o.pct / 10)}/10</b></div>
+            ${chg}
+            ${topBadge(o.ends, o.pct)}
+            <div class="strip-lg"><span><i class="lg-me"></i>Con</span><span><i class="lg-avg"></i>TB lớp</span><span><i class="lg-hi"></i>Top 3 cao nhất</span><span><i class="lg-lo"></i>Top 3 thấp nhất</span></div>
+</div>
+            ${strip(o.ends, o.pct, o.avg, false, true)}
+          </div></section>`;
+
+  // --- nhận xét: chỉ hiện khi có ---
+  if (cur.comment && cur.comment.trim())
+    h += `<section class="card cmt"><h2>💬 Nhận xét của giáo viên · ${tabM(cur.key)}</h2><p>${esc(cur.comment)}</p></section>`;
+
+  h += hwCard(cur);
+
+  // --- 2 nhóm: BTVN (Ngữ pháp, Nghe, Đọc) và Dò bài (Từ vựng, Ngữ pháp) ---
+  const clsNote = cur.cls && cur.cls !== d.student.lop ? ` · Lớp ${esc(cur.cls)}` : '';
+  GROUPS.forEach(g => {
+    const ks = g.keys.filter(k => cur.skills[k]);
+    const hasDg = g.dg && cur.checks && cur.checks.total;
+    if (!ks.length && !hasDg) return;
+    h += `<h2 class="sec">${g.title} · ${tabM(cur.key)}${clsNote}</h2><div class="grid">`;
+    ks.forEach(k => h += skillCard(k, cur.skills[k], prev && prev.skills[k], prev));
+    if (hasDg) h += dgCard(cur.checks, prev && prev.checks, prev);
+    h += '</div>';
+  });
+  h += itemsCard(cur);
+
+  // --- tổng quan nhiều tháng ---
+  if (M.length >= 2) h += overview(M);
+  else h += `<p class="note">Biểu đồ tiến trình sẽ hiển thị khi có từ 2 tháng điểm trở lên.</p>`;
+
+  $('#report').innerHTML = h;
+  $('#logout').onclick = logout;
+  document.querySelectorAll('.mtab').forEach(b => b.onclick = () => { state.sel = +b.dataset.i; render(); });
+  document.querySelectorAll('[data-r]').forEach(b => b.onclick = () => { state.range = +b.dataset.r; render(); });
+}
+
+function overview(M) {
+  const list = M.slice(-state.range), first = list[0], last = list[list.length - 1];
+  const diff = last.overall.pct - first.overall.pct, vd = dir(diff, 3);
+  const verdict = vd === 'up' ? `<span class="chg up">▲ Đang đi lên</span>`
+                : vd === 'down' ? `<span class="chg down">▼ Đang đi xuống</span>`
+                : `<span class="chg flat">– Ổn định</span>`;
+  let h = `<h2 class="sec">Tiến trình ${list.length} tháng gần nhất</h2><section class="card">
+    <div class="ov-head"><div class="verdict">Xu hướng chung: ${verdict}</div>`;
+  if (M.length > 3) h += `<div class="seg"><button data-r="3" class="${state.range === 3 ? 'on' : ''}">3 tháng</button><button data-r="${Math.min(5, M.length)}" class="${state.range > 3 ? 'on' : ''}">${Math.min(5, M.length)} tháng</button></div>`;
+  h += `</div>${lineChart(list)}`;
+
+  // bảng
+  const keys = ORDER.filter(k => list.some(m => m.skills[k]));
+  h += `<div class="tbl-w"><table><thead><tr><th>Kỹ năng</th>${list.map(m => `<th>${shortM(m.key)}</th>`).join('')}<th>Xu hướng</th></tr></thead><tbody>`;
+  const trendCell = (a, b, inv, thr) => {
+    if (a == null || b == null) return '<td>—</td>';
+    const df = inv ? a - b : b - a, dd = dir(df, thr);
+    return `<td class="trend"><span class="a ${dd}">${dd === 'up' ? '▲ Lên' : dd === 'down' ? '▼ Xuống' : '– Ổn định'}</span></td>`;
+  };
+  keys.forEach(k => {
+    let row = `<tr><td><b style="color:var(--c-${k})">${SKILL[k].full}</b></td>`, pv = null, fp = null, lp = null;
+    list.forEach(m => {
+      const s = m.skills[k];
+      if (!s) { row += '<td>—</td>'; return; }
+      row += `<td><span class="num">${fmt(s.score)}${s.max !== 10 ? '/' + fmt(s.max) : ''}</span>${pv != null ? arrow(s.pct - pv) : ''}</td>`;
+      pv = s.pct; if (fp == null) fp = s.pct; lp = s.pct;
+    });
+    h += row + (fp != null && fp !== lp ? trendCell(fp, lp, false, 3) : '<td class="trend"><span class="a flat">–</span></td>') + '</tr>';
+  });
+  // Dò Ngữ pháp: số buổi thuộc kĩ
+  if (list.some(m => m.checks && m.checks.total)) {
+    let row = `<tr><td><b style="color:var(--c-dg)">Dò Ngữ pháp</b></td>`, pv = null, fp = null, lp = null;
+    list.forEach(m => {
+      const c = m.checks;
+      if (!c || !c.total) { row += '<td>—</td>'; return; }
+      const r = c.ok / c.total * 100;
+      row += `<td><span class="num">${c.ok}/${c.total}</span>${pv != null ? arrow(r - pv, 1) : ''}</td>`;
+      pv = r; if (fp == null) fp = r; lp = r;
+    });
+    h += row + (fp != null && fp !== lp ? trendCell(fp, lp, false, 3) : '<td class="trend"><span class="a flat">–</span></td>') + '</tr>';
+  }
+  // Hoàn thành BTVN theo tháng
+  if (list.some(m => m.hw && m.hw.rate != null)) {
+    let row = `<tr><td><b>Hoàn thành BTVN</b></td>`, pv = null, fp = null, lp = null;
+    list.forEach(m => {
+      const r = m.hw && m.hw.rate;
+      if (r == null) { row += '<td>—</td>'; return; }
+      row += `<td><span class="num">${fmt(r)}%</span>${pv != null ? arrow(r - pv, 1) : ''}</td>`;
+      pv = r; if (fp == null) fp = r; lp = r;
+    });
+    h += row + (fp != null && fp !== lp ? trendCell(fp, lp, false, 3) : '<td class="trend"><span class="a flat">–</span></td>') + '</tr>';
+  }
+  // tổng & hạng
+  let r1 = '<tr class="sum"><td>Trung bình</td>';
+  list.forEach((m, j) => {
+    const p = list[j - 1];
+    r1 += `<td><span class="num">${fmt(m.overall.pct / 10)}</span>${p ? arrow(m.overall.pct - p.overall.pct) : ''}</td>`;
+  });
+  r1 += trendCell(first.overall.pct, last.overall.pct, false, 3) + '</tr>';
+  h += r1 + '</tbody></table></div>';
+  h += `<p class="note">▲ tăng · ▼ giảm so với tháng liền trước. Dò Ngữ pháp = số buổi thuộc kĩ / tổng số buổi dò. Điểm đã quy về thang 10 để so sánh giữa các bài. Xu hướng so sánh tháng đầu và tháng cuối trong khoảng đang xem.</p></section>`;
+  return h;
+}
+
+/* ---------- DỮ LIỆU MẪU (chỉ dùng khi API_URL trống) ---------- */
+function endsOf(arr) {
+  const s = arr.map(v => Math.round(v * 10) / 10).sort((a, b) => b - a);
+  return { hi: s.slice(0, 3), lo: s.slice(Math.max(3, s.length - 3)).reverse() };
+}
+function buildDemo(ten, lop = 'FOG3-A') {
+  let seed = 11; const rnd = () => (seed = (seed * 9301 + 49297) % 233280) / 233280;
+  const months = ['2026-06', '2026-07', '2026-08', '2026-09', '2026-10'];
+  const myBase = [6.2, 6.6, 6.4, 7.1, 7.8];
+  const comments = ['', 'Con tiến bộ ở phần Nghe, cần luyện thêm từ vựng chủ đề.', '', 'Con chăm chỉ làm bài tập về nhà, phần Đọc hiểu còn chậm.',
+    'Tháng này con tiến bộ rõ rệt, đặc biệt ở Ngữ pháp và Từ vựng.\nPhụ huynh nhắc con luyện nghe 15 phút mỗi ngày giúp G.EDU nhé.'];
+  const classBase = [...Array(15)].map(() => 5 + rnd() * 3.8);
+  const off = { grammar: .4, reading: -.3, listening: -.7, vocab: .5 };
+  const round = v => Math.max(2, Math.min(10, Math.round(v * 2) / 2));
+  const out = months.map((key, mi) => {
+    const rows = [{}].concat(classBase.map(() => ({})));
+    ORDER.forEach(k => {
+      rows[0][k] = round(myBase[mi] + off[k] + (rnd() - .5) * .6);
+      classBase.forEach((b, j) => rows[j + 1][k] = round(b + (rnd() - .5) * 2));
+    });
+    if (mi === 0) rows.forEach(r => delete r.vocab); // tháng 6 chưa có Vocab
+    const skills = {};
+    ORDER.forEach(k => {
+      const all = rows.map(r => r[k]).filter(v => v != null).map(v => v * 10);
+      if (rows[0][k] == null) return;
+      const mine = rows[0][k] * 10;
+      skills[k] = { score: rows[0][k], max: 10, pct: mine, rank: 1 + all.filter(v => v > mine).length, n: all.length,
+        avg: Math.round(all.reduce((a, b) => a + b, 0) / all.length * 10) / 10, top: Math.max(...all), ends: endsOf(all),
+        tests: [{ d: '05/' + key.slice(5), t: 'Q' + (20 + mi), s: rows[0][k], mx: 10 }, { d: '19/' + key.slice(5), t: 'Q' + (24 + mi), s: rows[0][k], mx: 10 }] };
+    });
+    const ov = rows.map(r => { const v = ORDER.map(k => r[k]).filter(x => x != null); return v.reduce((a, b) => a + b, 0) / v.length * 10; });
+    const myOv = Math.round(ov[0] * 10) / 10;
+    // các cột điểm trong tháng (mẫu theo sổ lớp)
+    const M2 = key.slice(5), I = (d, sk, t, st, v, mx, mark) => ({ d: d + '/' + M2, sk, t, st, v, mx, mark: mark || '' });
+    const items = [
+      I('03', 'dobai', '', 'ok'), I('03', 'listening', 'Q2' + mi, 'done', 13, 16), I('03', 'grammar', 'Q1' + mi, 'done', 24, 30),
+      I('07', 'dobai', '02.' + mi, 'done', 31, 35), I('07', 'listening', 'Q3' + mi, mi === 4 ? 'zero' : 'done', mi === 4 ? undefined : 10, 14, mi === 4 ? 'chưa làm' : ''),
+      I('12', 'dobai', '', mi === 4 ? 'absent' : 'chuaki', undefined, undefined, 'OFF(P)'), I('12', 'listening', 'Q4' + mi, mi === 4 ? 'absent' : 'done', 12, 16, '/'), I('12', 'grammar', 'Q5' + mi, mi === 4 ? 'absent' : 'done', 26, 30, '/'),
+      I('17', 'dobai', '03.' + mi, 'done', 33, 35), I('17', 'reading', 'R' + mi, 'done', 8, 10), I('17', 'grammar', 'Q6' + mi, mi === 3 ? 'miss' : 'done', 21, 30, 'quên sách'),
+      I('24', 'dobai', '', 'ok'), I('24', 'listening', 'Q7' + mi, 'done', 14, 16), I('24', 'reading', 'R' + (mi + 1), 'done', 7, 10)
+    ];
+    const hwI = items.filter(x => x.sk !== 'dobai'), c = st => hwI.filter(x => x.st === st).length;
+    const need = c('done') + c('zero') + c('miss');
+    const hw = { cols: hwI.length, done: c('done'), zero: c('zero'), miss: c('miss'), absent: c('absent'), rate: Math.round(c('done') / need * 1000) / 10, avg: 84.6 };
+    return { key, label: tabM(key), cls: lop, skills, comment: comments[mi], items, hw, checks: Object.assign({ ok: 4 + (mi % 3), chuaki: 4 - (mi % 3), total: 8 }, (() => { const r = (4 + (mi % 3)) / 8 * 100, all = [r, 100, 87.5, 75, 62.5, 50, 87.5, 25, 37.5]; return { pct: r, n: all.length, avg: Math.round(all.reduce((a, b) => a + b, 0) / all.length * 10) / 10, ends: endsOf(all) }; })()),
+      overall: { pct: myOv, rank: 1 + ov.filter(v => v > ov[0] + 1e-9).length, n: ov.length,
+        avg: Math.round(ov.reduce((a, b) => a + b, 0) / ov.length * 10) / 10, top: Math.max(...ov), ends: endsOf(ov) } };
+  });
+  return { ok: true, student: { ten, lop }, months: out };
+}
+
+/* ---------- tooltip: hover (máy tính) + chạm (điện thoại) ---------- */
+(function () {
+  const tip = document.getElementById('tip');
+  const showTip = (el) => { const r = el.getBoundingClientRect(); tip.textContent = el.dataset.tip;
+    tip.style.left = (r.left + r.width / 2) + 'px'; tip.style.top = r.top + 'px'; tip.style.display = 'block'; };
+  document.addEventListener('mouseover', e => { const el = e.target.closest('[data-tip]'); el ? showTip(el) : (tip.style.display = 'none'); });
+  document.addEventListener('click', e => { const el = e.target.closest('[data-tip]'); el ? showTip(el) : (tip.style.display = 'none'); });
+  window.addEventListener('scroll', () => tip.style.display = 'none', { passive: true });
+})();
+
+init();
+</script>
+</body>
+</html>
